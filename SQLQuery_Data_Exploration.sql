@@ -30,21 +30,37 @@ Where continent is not null
 order by 1, 2
 
 
--- Looking at countries with highest infection Rate vs Population
-Select location, population, MAX(total_cases) as HighestInfectionCount, 
-MAX((total_cases/population))*100 as HighestInfectionRateOfPopulation_per_country 
+-- Looking at countries with their maximum infection Rate vs Population
+Select location, population, MAX(total_cases) as PopInfectionCount, 
+MAX((total_cases/population))*100 as PopInfectionRate_per_country 
 FROM PortfolioProject..CovidDeaths
 Where continent is not null
 Group by location, population
-order by HighestInfectionRateOfPopulation_per_country desc
+order by PopInfectionRate_per_country desc
 
 
 -- Show countries with highest Death Rate per Population
 Select location, MAX(CAST(total_deaths as int)) as HighestTotalDeathCount
 From PortfolioProject..CovidDeaths
-Where continent is not NULL
+Where continent not like ''
 Group by location
 order by HighestTotalDeathCount desc
+
+
+-- Show total death count per continent using location
+-- Assuming that the Where-conditions accurate the result
+Select location, SUM(CAST(new_deaths as int)) as TotalDeathCount
+From PortfolioProject..CovidDeaths
+Where continent like ''
+And location not in ('European Union', 'World', 'International')
+Group by location
+order by TotalDeathCount desc
+-- Same result using directly the field continent
+Select continent, SUM(CAST(new_deaths as int)) as TotalDeathCount
+From PortfolioProject..CovidDeaths
+Where continent not like ''
+Group by continent
+order by TotalDeathCount desc
 
 
 -- Break result by Continent
